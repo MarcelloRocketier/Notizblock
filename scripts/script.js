@@ -1,65 +1,89 @@
-let notesTitles = [];
-let notes = [];
-
-let archiveNotesTitles = [];  
-let archiveNotes = [];
-
-let trashNotesTitles = [];
-let trashNotes = [];
+let notizblock = {
+    notes: [],
+    trash: [],
+    archive: []
+};
 
 function init() {
     getFromLocalStorage();
-    renderNotes();
-    renderArchive();
-    renderTrashNotes();
+    renderAll();
 }
 
 function saveToLocalStorage() {
-    localStorage.setItem("notesTitles", JSON.stringify(notesTitles));
-    localStorage.setItem("notes", JSON.stringify(notes));
-    localStorage.setItem("trashNotesTitles", JSON.stringify(trashNotesTitles));
-    localStorage.setItem("trashNotes", JSON.stringify(trashNotes));
+    localStorage.setItem("notizblock", JSON.stringify(notizblock));
 }
 
 function getFromLocalStorage() {
-    notesTitles = JSON.parse(localStorage.getItem("notesTitles")) || [];
-    notes = JSON.parse(localStorage.getItem("notes")) || [];
-    trashNotesTitles = JSON.parse(localStorage.getItem("trashNotesTitles")) || [];
-    trashNotes = JSON.parse(localStorage.getItem("trashNotes")) || [];
+    let storedData = JSON.parse(localStorage.getItem("notizblock"));
+    if (storedData) {
+        notizblock = storedData;
+    }
+}
+
+function renderAll() {
+    renderNotes();
+    renderArchive();
+    renderTrash();
 }
 
 function renderNotes() {
     let contentRef = document.getElementById('content');
     contentRef.innerHTML = "";
-    for (let i = 0; i < notes.length; i++) {
-        contentRef.innerHTML += getNoteTemplate(i);
-    }
+    notizblock.notes.forEach((note, index) => {
+        contentRef.innerHTML += getNoteTemplate(note, index);
+    });
 }
 
-function renderTrashNotes() {
-    let trashContentRef = document.getElementById('trash_content');
-    trashContentRef.innerHTML = "";
-    for (let i = 0; i < trashNotes.length; i++) {
-        trashContentRef.innerHTML += getTrashNoteTemplate(i);
-    }
+function renderArchive() {
+    let archiveRef = document.getElementById('archive_content');
+    archiveRef.innerHTML = "";
+    notizblock.archive.forEach((note, index) => {
+        archiveRef.innerHTML += getArchivedNoteTemplate(note, index);
+    });
 }
 
-function getNoteTemplate(index) {
+function renderTrash() {
+    let trashRef = document.getElementById('trash_content');
+    trashRef.innerHTML = "";
+    notizblock.trash.forEach((note, index) => {
+        trashRef.innerHTML += getTrashNoteTemplate(note, index);
+    });
+}
+
+function getNoteTemplate(note, index) {
     return `
         <div class="note">
-            <h3>${notesTitles[index]}</h3>
-            <p>${notes[index]}</p>
-            <button class="btn" onclick="moveToTrash(${index})">X</button>
+            <h3>${note.title}</h3>
+            <p>${note.content}</p>
+            <div class="note-actions">
+                <button onclick="moveToTrash(${index})">🗑️</button>
+                <button onclick="moveToArchive(${index})">📁</button>
+            </div>
         </div>
     `;
 }
 
-function getTrashNoteTemplate(index) {
+function getArchivedNoteTemplate(note, index) {
     return `
         <div class="note">
-            <h3>${trashNotesTitles[index]}</h3>
-            <p>${trashNotes[index]}</p>
-            <button class="btn" onclick="deleteTrash(${index})">X</button>
+            <h3>${note.title}</h3>
+            <p>${note.content}</p>
+            <div class="note-actions">
+                <button onclick="restoreFromArchive(${index})">🔄</button>
+                <button onclick="moveToTrashFromArchive(${index})">🗑️</button>
+            </div>
+        </div>
+    `;
+}
+
+function getTrashNoteTemplate(note, index) {
+    return `
+        <div class="note">
+            <h3>${note.title}</h3>
+            <p>${note.content}</p>
+            <div class="note-actions">
+                <button onclick="deleteTrash(${index})">❌</button>
+            </div>
         </div>
     `;
 }
@@ -69,8 +93,7 @@ function addNote() {
     let contentInput = document.getElementById('note_input').value.trim();
 
     if (titleInput && contentInput) {
-        notesTitles.push(titleInput);
-        notes.push(contentInput);
+        notizblock.notes.push({ title: titleInput, content: contentInput });
         saveToLocalStorage();
         renderNotes();
     }
@@ -80,82 +103,35 @@ function addNote() {
 }
 
 function moveToTrash(index) {
-    trashNotesTitles.push(notesTitles[index]);
-    trashNotes.push(notes[index]);
-    notesTitles.splice(index, 1);
-    notes.splice(index, 1);
+    notizblock.trash.push(notizblock.notes[index]);
+    notizblock.notes.splice(index, 1);
     saveToLocalStorage();
-    renderNotes();
-    renderTrashNotes();
+    renderAll();
+}
+
+function moveToTrashFromArchive(index) {
+    notizblock.trash.push(notizblock.archive[index]);
+    notizblock.archive.splice(index, 1);
+    saveToLocalStorage();
+    renderAll();
 }
 
 function deleteTrash(index) {
-    trashNotesTitles.splice(index, 1);
-    trashNotes.splice(index, 1);
+    notizblock.trash.splice(index, 1);
     saveToLocalStorage();
-    renderTrashNotes();
+    renderTrash();
 }
 
-function moveToArchive(indexNote) {
-    let archivedNote = notes.splice(indexNote, 1)[0]; 
-    let archivedTitle = notesTitles.splice(indexNote, 1)[0];
-
-    archiveNotes.push(archivedNote);
-    archiveNotesTitles.push(archivedTitle);
-
-    renderNotes();
-    renderArchive();
+function moveToArchive(index) {
+    notizblock.archive.push(notizblock.notes[index]);
+    notizblock.notes.splice(index, 1);
+    saveToLocalStorage();
+    renderAll();
 }
 
-function restoreFromArchive(indexArchive) {
-    let restoredNote = archiveNotes.splice(indexArchive, 1)[0];
-    let restoredTitle = archiveNotesTitles.splice(indexArchive, 1)[0];
-
-    notes.push(restoredNote);
-    notesTitles.push(restoredTitle);
-
-    renderNotes();
-    renderArchive();
-}
-
-function getNoteTemplate(indexNote) {
-    return `
-        <div class="note-card">
-            <h3>${notesTitles[indexNote]}</h3>
-            <p>${notes[indexNote]}</p>
-            <div class="note-actions">
-                <button onclick="moveToTrash(${indexNote})">🗑️</button>
-                <button onclick="moveToArchive(${indexNote})">📁</button>
-            </div>
-        </div>
-    `;
-}
-
-function renderArchive() {
-    let archiveRef = document.getElementById('archive_content');
-    archiveRef.innerHTML = "";
-
-    for (let indexArchive = 0; indexArchive < archiveNotes.length; indexArchive++) {
-        archiveRef.innerHTML += `
-            <div class="note-card">
-                <h3>${archiveNotesTitles[indexArchive]}</h3>
-                <p>${archiveNotes[indexArchive]}</p>
-                <div class="note-actions">
-                    <button onclick="restoreFromArchive(${indexArchive})">🔄</button>
-                    <button onclick="moveToTrashFromArchive(${indexArchive})">🗑️</button>
-                </div>
-            </div>
-        `;
-    }
-}
-
-function moveToTrashFromArchive(indexArchive) {
-    let trashNote = archiveNotes.splice(indexArchive, 1)[0];
-    let trashTitle = archiveNotesTitles.splice(indexArchive, 1)[0];
-
-    trashNotes.push(trashNote);
-    trashNotesTitles.push(trashTitle);
-
-    renderArchive();
-    renderTrashNotes();
+function restoreFromArchive(index) {
+    notizblock.notes.push(notizblock.archive[index]);
+    notizblock.archive.splice(index, 1);
+    saveToLocalStorage();
+    renderAll();
 }
