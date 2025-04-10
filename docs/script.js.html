@@ -1,4 +1,32 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: script.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: script.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * The main notepad object that contains arrays for notes, trash, and archive.
  * @type {Object}
  * @property {Object[]} notes - The active notes.
@@ -95,14 +123,14 @@ function renderTrash() {
  */
 function getNoteTemplate(note, index) {
     return `
-        <div class="note">
-            <h3>${note.title}</h3>
-            <p>${note.content}</p>
-            <div class="note-actions">
-                <button onclick="moveToTrash(${index})">🗑️</button>
-                <button onclick="moveToArchive(${index})">📁</button>
-            </div>
-        </div>
+        &lt;div class="note">
+            &lt;h3>${note.title}&lt;/h3>
+            &lt;p>${note.content}&lt;/p>
+            &lt;div class="note-actions">
+                &lt;button onclick="moveToTrash(${index})">🗑️&lt;/button>
+                &lt;button onclick="moveToArchive(${index})">📁&lt;/button>
+            &lt;/div>
+        &lt;/div>
     `;
 }
 
@@ -115,14 +143,14 @@ function getNoteTemplate(note, index) {
  */
 function getArchivedNoteTemplate(note, index) {
     return `
-        <div class="note">
-            <h3>${note.title}</h3>
-            <p>${note.content}</p>
-            <div class="note-actions">
-                <button onclick="restoreFromArchive(${index})">🔄</button>
-                <button onclick="moveToTrashFromArchive(${index})">🗑️</button>
-            </div>
-        </div>
+        &lt;div class="note">
+            &lt;h3>${note.title}&lt;/h3>
+            &lt;p>${note.content}&lt;/p>
+            &lt;div class="note-actions">
+                &lt;button onclick="restoreFromArchive(${index})">🔄&lt;/button>
+                &lt;button onclick="moveToTrashFromArchive(${index})">🗑️&lt;/button>
+            &lt;/div>
+        &lt;/div>
     `;
 }
 
@@ -135,13 +163,13 @@ function getArchivedNoteTemplate(note, index) {
  */
 function getTrashNoteTemplate(note, index) {
     return `
-        <div class="note">
-            <h3>${note.title}</h3>
-            <p>${note.content}</p>
-            <div class="note-actions">
-                <button onclick="deleteTrash(${index})">❌</button>
-            </div>
-        </div>
+        &lt;div class="note">
+            &lt;h3>${note.title}&lt;/h3>
+            &lt;p>${note.content}&lt;/p>
+            &lt;div class="note-actions">
+                &lt;button onclick="deleteTrash(${index})">❌&lt;/button>
+            &lt;/div>
+        &lt;/div>
     `;
 }
 
@@ -154,7 +182,7 @@ function addNote() {
     let titleInput = document.getElementById('title_input').value.trim();
     let contentInput = document.getElementById('note_input').value.trim();
 
-    if (titleInput && contentInput) {
+    if (titleInput &amp;&amp; contentInput) {
         notizblock.notes.push({ title: titleInput, content: contentInput });
         saveToLocalStorage();
         renderNotes();
@@ -229,7 +257,7 @@ function restoreFromArchive(index) {
 }
 
 /* ------------------------------ */
-/* Functions for Toggle & Darkmode */
+/* Functions for Toggle &amp; Darkmode */
 /* ------------------------------ */
 
 /**
@@ -271,9 +299,9 @@ function setupDarkmode() {
 /**
  * Sorts an array of items based on the given sort value.
  *
- * @param {Array<Object>} items - The items to sort.
+ * @param {Array&lt;Object>} items - The items to sort.
  * @param {string} sortValue - The sort criteria ("price-asc", "price-desc", "name-asc", "name-desc").
- * @returns {Array<Object>} The sorted items.
+ * @returns {Array&lt;Object>} The sorted items.
  */
 function sortItems(items, sortValue) {
     switch (sortValue) {
@@ -296,20 +324,20 @@ function sortItems(items, sortValue) {
  * @param {string} name - The customer's name.
  * @param {string} address - The customer's address.
  * @param {string} note - An optional note.
- * @param {Array<Object>} cart - The current cart array.
+ * @param {Array&lt;Object>} cart - The current cart array.
  * @returns {string} The HTML string for the order summary.
  */
 function getOrderSummaryHTML(name, address, note, cart) {
     const summary = cart.map(item =>
         `${item.name} x ${item.quantity} = ${(item.price * item.quantity).toFixed(2)} €`
-    ).join("<br>");
+    ).join("&lt;br>");
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
     return `
-        <strong>Name:</strong> ${name}<br>
-        <strong>Address:</strong> ${address}<br><br>
-        <strong>Order:</strong><br>${summary}<br><br>
-        <strong>Total:</strong> ${total.toFixed(2)} €<br>
-        <strong>Note:</strong> ${note || "-"}
+        &lt;strong>Name:&lt;/strong> ${name}&lt;br>
+        &lt;strong>Address:&lt;/strong> ${address}&lt;br>&lt;br>
+        &lt;strong>Order:&lt;/strong>&lt;br>${summary}&lt;br>&lt;br>
+        &lt;strong>Total:&lt;/strong> ${total.toFixed(2)} €&lt;br>
+        &lt;strong>Note:&lt;/strong> ${note || "-"}
     `;
 }
 
@@ -357,3 +385,26 @@ window.closeOrderModal = closeOrderModal;
 window.addToCart = addToCart;
 window.changeQuantity = changeQuantity;
 window.removeFromCart = removeFromCart;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addNote">addNote</a></li><li><a href="global.html#deleteTrash">deleteTrash</a></li><li><a href="global.html#getArchivedNoteTemplate">getArchivedNoteTemplate</a></li><li><a href="global.html#getFromLocalStorage">getFromLocalStorage</a></li><li><a href="global.html#getNoteTemplate">getNoteTemplate</a></li><li><a href="global.html#getOrderSummaryHTML">getOrderSummaryHTML</a></li><li><a href="global.html#getTrashNoteTemplate">getTrashNoteTemplate</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#initApp">initApp</a></li><li><a href="global.html#moveToArchive">moveToArchive</a></li><li><a href="global.html#moveToTrash">moveToTrash</a></li><li><a href="global.html#moveToTrashFromArchive">moveToTrashFromArchive</a></li><li><a href="global.html#notizblock">notizblock</a></li><li><a href="global.html#renderAll">renderAll</a></li><li><a href="global.html#renderArchive">renderArchive</a></li><li><a href="global.html#renderNotes">renderNotes</a></li><li><a href="global.html#renderTrash">renderTrash</a></li><li><a href="global.html#restoreFromArchive">restoreFromArchive</a></li><li><a href="global.html#saveToLocalStorage">saveToLocalStorage</a></li><li><a href="global.html#setupCartToggle">setupCartToggle</a></li><li><a href="global.html#setupDarkmode">setupDarkmode</a></li><li><a href="global.html#setupSortListener">setupSortListener</a></li><li><a href="global.html#sortItems">sortItems</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Thu Apr 10 2025 14:23:42 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
